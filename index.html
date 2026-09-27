@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DaskQuest — IT-квест для детей | by Dask</title>
+<title>DaskQuest — IT-квест для детей</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
 
 <style>
@@ -39,12 +39,12 @@ body {
   border: 1px solid rgba(255, 217, 61, 0.4);
 }
 .author-signature {
-  font-size: 16px; color: #aaa; padding: 6px 14px;
+  font-size: 15px; color: #aaa; padding: 6px 14px;
   border: 1px solid rgba(124, 106, 255, 0.5); border-radius: 20px;
   background: rgba(124, 106, 255, 0.1); transition: all 0.3s;
 }
 .author-signature:hover { background: rgba(124, 106, 255, 0.3); color: #fff; }
-.author-signature b { color: #7c6aff; font-style: italic; font-size: 18px; }
+.author-signature b { color: #7c6aff; font-style: italic; font-size: 16px; }
 
 /* ЭКРАНЫ */
 .screen {
@@ -80,6 +80,8 @@ body {
 .btn-back { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
 .btn-back:hover { background: rgba(255,255,255,0.2); }
 .btn:active { transform: translateY(-2px) scale(0.98); }
+.btn-run { background: linear-gradient(135deg, #7c6aff, #5d4fd6); box-shadow: 0 6px 20px rgba(124,106,255,0.4); }
+.btn-run:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(124,106,255,0.6); }
 
 .difficulty-choice { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
 
@@ -90,7 +92,6 @@ body {
   font-size: 14px; color: #888;
 }
 .author-block b { color: #fff; font-size: 16px; letter-spacing: 1px; }
-.author-nick { margin-top: 6px; font-size: 13px; color: #7c6aff; font-style: italic; }
 
 /* КАРТА УРОВНЕЙ */
 .map-grid {
@@ -169,6 +170,48 @@ body {
 
 .game-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
 
+/* ИГРА 2: КУРЬЕР */
+.grid-board {
+  display: grid; gap: 6px; justify-content: center;
+  margin: 20px auto; padding: 15px;
+  background: rgba(0,0,0,0.3); border-radius: 15px;
+  border: 2px solid rgba(124,106,255,0.4);
+}
+.cell {
+  width: 60px; height: 60px; border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; transition: all 0.3s;
+}
+.cell.wall { background: rgba(100,100,100,0.4); border: 1px solid #666; }
+.cell.goal { background: rgba(255,217,61,0.2); border: 1px solid #ffd93d; }
+.cell.robot { background: rgba(46,204,113,0.3); border: 1px solid #2ecc71; }
+.cell.visited { background: rgba(124,106,255,0.15); }
+
+.commands-panel {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px; margin: 15px 0;
+}
+.cmd-btn {
+  padding: 12px 18px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: #fff; font-size: 20px; font-weight: bold;
+  cursor: pointer; transition: all 0.2s; min-width: 55px;
+}
+.cmd-btn:hover { transform: scale(1.1); background: linear-gradient(135deg, #2ecc71, #27ae60); }
+
+.program-list {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 6px; min-height: 40px; padding: 10px;
+  background: rgba(0,0,0,0.2); border-radius: 12px;
+  margin-bottom: 15px;
+}
+.program-cmd {
+  padding: 6px 12px; border-radius: 8px;
+  background: rgba(124,106,255,0.3);
+  font-size: 18px; border: 1px solid rgba(124,106,255,0.6);
+}
+
 /* ФУТЕР */
 .site-footer {
   text-align: center; padding: 15px; font-size: 13px; color: #666;
@@ -183,12 +226,13 @@ body {
   .btn { min-width: 140px; padding: 14px 24px; font-size: 15px; }
   .site-header { padding: 10px 15px; }
   .logo { font-size: 18px; }
-  .author-signature { font-size: 13px; padding: 4px 10px; }
+  .author-signature { font-size: 12px; padding: 4px 10px; }
   .score-display { font-size: 13px; padding: 4px 10px; }
   .map-grid { grid-template-columns: 1fr; }
   .level-icon { font-size: 36px; }
   .robot-face { font-size: 60px; }
   .slot { min-width: 100px; padding: 12px 8px; }
+  .cell { width: 45px; height: 45px; font-size: 20px; }
 }
 </style>
 </head>
@@ -219,7 +263,6 @@ body {
   </div>
   <div class="author-block">
     <p>Автор проекта: <b>Егорова Дарья</b></p>
-    <p class="author-nick">ник: Dask</p>
   </div>
 </main>
 
@@ -274,7 +317,35 @@ body {
   </div>
 </main>
 
-<!-- ЭКРАН 4: ЗАГЛУШКА -->
+<!-- ЭКРАН 4: КУРЬЕР -->
+<main class="screen" id="screen-courier">
+  <div class="game-header">
+    <h2>🧭 Робот-курьер</h2>
+    <div class="game-progress" id="courier-progress">Уровень 1 из 1</div>
+  </div>
+  <p id="courier-desc" class="game-desc">Составь программу и нажми «Запуск».</p>
+
+  <div class="grid-board" id="courier-board"></div>
+
+  <div class="program-list" id="courier-program"></div>
+
+  <div class="commands-panel">
+    <button class="cmd-btn" onclick="addCmd('up')">⬆</button>
+    <button class="cmd-btn" onclick="addCmd('down')">⬇</button>
+    <button class="cmd-btn" onclick="addCmd('left')">⬅</button>
+    <button class="cmd-btn" onclick="addCmd('right')">➡</button>
+  </div>
+
+  <div class="game-message" id="courier-message"></div>
+
+  <div class="game-buttons">
+    <button class="btn btn-run" onclick="runProgram()">▶ Запуск</button>
+    <button class="btn btn-back" onclick="resetProgram()">↺ Сброс</button>
+    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+  </div>
+</main>
+
+<!-- ЭКРАН 5: ЗАГЛУШКА -->
 <main class="screen" id="screen-soon">
   <h2>🚧 В разработке</h2>
   <p class="map-subtitle">Эта игра скоро появится!</p>
@@ -282,16 +353,16 @@ body {
 </main>
 
 <footer class="site-footer">
-  <span class="signature">DaskQuest</span> · by Dask · © 2026 — Егорова Дарья
+  <span class="signature">DaskQuest</span> · © 2026 — Егорова Дарья
 </footer>
 
 <script>
-// ===== DaskQuest — by Dask · Егорова Дарья =====
+// ===== DaskQuest =====
 
 const game = {
   difficulty: 'easy',
   score: 0,
-  unlockedLevels: 1,
+  unlockedLevels: 2,
   completedLevels: [],
 };
 
@@ -304,7 +375,7 @@ function showScreen(id) {
 function startGame(diff) {
   game.difficulty = diff;
   game.score = 0;
-  game.unlockedLevels = 1;
+  game.unlockedLevels = 2;
   game.completedLevels = [];
   updateScore();
   updateMap();
@@ -342,10 +413,13 @@ function updateMap() {
 function openLevel(n) {
   if (n > game.unlockedLevels) return;
   if (n === 1) startRobotGame();
+  else if (n === 2) startCourierGame();
   else showScreen('screen-soon');
 }
 
+// ============================================================
 // ИГРА 1: РЕМОНТ РОБОТА
+// ============================================================
 let robot = { round: 1, totalRounds: 1, needed: [], placed: [], available: [] };
 
 function startRobotGame() {
@@ -488,7 +562,7 @@ function checkRobot() {
 
 function finishRobotGame() {
   if (!game.completedLevels.includes(1)) game.completedLevels.push(1);
-  if (game.unlockedLevels < 2) game.unlockedLevels = 2;
+  if (game.unlockedLevels < 3) game.unlockedLevels = 3;
   updateMap();
   setRobotMessage('🎉 Игра пройдена! Открыт следующий уровень.', 'ok');
   setTimeout(() => showScreen('screen-map'), 1800);
@@ -514,6 +588,197 @@ function shakeRobot() {
   setTimeout(() => face.classList.remove('sad'), 600);
 }
 
+// ============================================================
+// ИГРА 2: КУРЬЕР
+// ============================================================
+let courier = {
+  size: 3,
+  robot: {x:0, y:0},
+  start: {x:0, y:0},
+  goal: {x:2, y:2},
+  walls: [],
+  commands: [],
+  maxCommands: 6,
+  level: 1,
+  totalLevels: 1,
+};
+
+function startCourierGame() {
+  courier.level = 1;
+  courier.totalLevels = game.difficulty === 'easy' ? 1 : 3;
+  loadCourierLevel();
+  showScreen('screen-courier');
+}
+
+function loadCourierLevel() {
+  if (game.difficulty === 'easy') {
+    courier.size = 3;
+    courier.start = {x:0, y:0};
+    courier.goal = {x:2, y:2};
+    courier.walls = [];
+    courier.maxCommands = 6;
+    document.getElementById('courier-desc').textContent =
+      'Доведи робота 🤖 до цели 🎯. Используй стрелки и нажми «Запуск».';
+  } else {
+    const levels = [
+      { size: 3, start: {x:0,y:0}, goal: {x:2,y:2}, walls: [], max: 6 },
+      { size: 4, start: {x:0,y:0}, goal: {x:3,y:3}, walls: [{x:1,y:1},{x:2,y:1}], max: 9 },
+      { size: 5, start: {x:0,y:0}, goal: {x:4,y:4}, walls: [{x:1,y:1},{x:2,y:2},{x:3,y:1}], max: 12 },
+    ];
+    const l = levels[courier.level - 1];
+    courier.size = l.size;
+    courier.start = l.start;
+    courier.goal = l.goal;
+    courier.walls = l.walls;
+    courier.maxCommands = l.max;
+    document.getElementById('courier-desc').textContent =
+      `Уровень ${courier.level}: доведи робота до цели. Есть стены! Максимум команд: ${l.max}.`;
+  }
+
+  courier.robot = {...courier.start};
+  courier.commands = [];
+
+  document.getElementById('courier-progress').textContent =
+    `Уровень ${courier.level} из ${courier.totalLevels}`;
+
+  renderCourierBoard();
+  renderCourierProgram();
+  setCourierMessage('', '');
+}
+
+function renderCourierBoard() {
+  const board = document.getElementById('courier-board');
+  board.style.gridTemplateColumns = `repeat(${courier.size}, 60px)`;
+
+  let html = '';
+  for (let y = 0; y < courier.size; y++) {
+    for (let x = 0; x < courier.size; x++) {
+      let cls = 'cell';
+      let content = '';
+
+      if (courier.walls.some(w => w.x === x && w.y === y)) {
+        cls += ' wall';
+        content = '🧱';
+      }
+      if (x === courier.goal.x && y === courier.goal.y) {
+        cls += ' goal';
+        content = '🎯';
+      }
+      if (x === courier.robot.x && y === courier.robot.y) {
+        cls += ' robot';
+        content = '🤖';
+      }
+
+      html += `<div class="${cls}">${content}</div>`;
+    }
+  }
+  board.innerHTML = html;
+}
+
+function renderCourierProgram() {
+  const prog = document.getElementById('courier-program');
+  const arrows = {up:'⬆', down:'⬇', left:'⬅', right:'➡'};
+  prog.innerHTML = courier.commands.map(c =>
+    `<div class="program-cmd">${arrows[c]}</div>`
+  ).join('') || '<span style="color:#666">Программа пуста</span>';
+}
+
+function addCmd(dir) {
+  if (courier.commands.length >= courier.maxCommands) {
+    setCourierMessage('⚠️ Достигнут лимит команд!', 'info');
+    return;
+  }
+  courier.commands.push(dir);
+  renderCourierProgram();
+  setCourierMessage('', '');
+}
+
+function resetProgram() {
+  courier.robot = {...courier.start};
+  courier.commands = [];
+  renderCourierBoard();
+  renderCourierProgram();
+  setCourierMessage('', '');
+}
+
+function runProgram() {
+  if (courier.commands.length === 0) {
+    setCourierMessage('🤔 Сначала добавь команды!', 'info');
+    return;
+  }
+
+  let {x, y} = {...courier.start};
+  let crashed = false;
+  const steps = [];
+
+  for (const cmd of courier.commands) {
+    let nx = x, ny = y;
+    if (cmd === 'up') ny--;
+    if (cmd === 'down') ny++;
+    if (cmd === 'left') nx--;
+    if (cmd === 'right') nx++;
+
+    if (nx < 0 || ny < 0 || nx >= courier.size || ny >= courier.size) {
+      crashed = true; break;
+    }
+    if (courier.walls.some(w => w.x === nx && w.y === ny)) {
+      crashed = true; break;
+    }
+    x = nx; y = ny;
+    steps.push({x, y});
+  }
+
+  // Анимация
+  let i = 0;
+  const animate = () => {
+    if (i < steps.length) {
+      courier.robot = steps[i];
+      renderCourierBoard();
+      i++;
+      setTimeout(animate, 300);
+    } else {
+      courier.robot = {x, y};
+      renderCourierBoard();
+
+      if (crashed) {
+        setCourierMessage('💥 Робот врезался! Сбрось и попробуй снова.', 'err');
+      } else if (x === courier.goal.x && y === courier.goal.y) {
+        const points = game.difficulty === 'easy' ? 10 : 15;
+        game.score += points;
+        updateScore();
+        setCourierMessage(`✅ Цель достигнута! +${points} очков`, 'ok');
+
+        setTimeout(() => {
+          if (courier.level < courier.totalLevels) {
+            courier.level++;
+            loadCourierLevel();
+          } else {
+            finishCourierGame();
+          }
+        }, 1500);
+      } else {
+        setCourierMessage('🤔 Робот не дошёл до цели. Измени программу.', 'info');
+      }
+    }
+  };
+  animate();
+}
+
+function finishCourierGame() {
+  if (!game.completedLevels.includes(2)) game.completedLevels.push(2);
+  if (game.unlockedLevels < 4) game.unlockedLevels = 4;
+  updateMap();
+  setCourierMessage('🎉 Игра пройдена! Открыт следующий уровень.', 'ok');
+  setTimeout(() => showScreen('screen-map'), 1800);
+}
+
+function setCourierMessage(text, type) {
+  const el = document.getElementById('courier-message');
+  el.textContent = text;
+  el.className = 'game-message ' + (type || '');
+}
+
+// ===== УТИЛИТЫ =====
 function shuffle(a) {
   const arr = [...a];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -523,12 +788,9 @@ function shuffle(a) {
   return arr;
 }
 
-console.log(
-  '%c DaskQuest %c by Dask ',
+console.log('%c DaskQuest %c by Dask ',
   'background:#7c6aff;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px 0 0 4px;',
-  'background:#24243e;color:#7c6aff;font-style:italic;padding:4px 8px;border-radius:0 4px 4px 0;'
-);
-console.log('Автор проекта: Егорова Дарья');
+  'background:#24243e;color:#7c6aff;font-style:italic;padding:4px 8px;border-radius:0 4px 4px 0;');
 </script>
 
 </body>
