@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Код 67 — IT-квест для детей | by Dask</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ШАПКА */
+.site-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 15px 30px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(120, 100, 255, 0.3);
+  flex-wrap: wrap; gap: 10px;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: bold; }
+.logo-icon { font-size: 28px; animation: float 3s ease-in-out infinite; display: inline-block; }
+@keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+.logo-accent { color: #7c6aff; font-weight: 900; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.score-display {
+  font-size: 16px; font-weight: bold; color: #ffd93d;
+  padding: 6px 14px; border-radius: 20px;
+  background: rgba(255, 217, 61, 0.15);
+  border: 1px solid rgba(255, 217, 61, 0.4);
+}
+.author-signature {
+  font-size: 16px; color: #aaa; padding: 6px 14px;
+  border: 1px solid rgba(124, 106, 255, 0.5); border-radius: 20px;
+  background: rgba(124, 106, 255, 0.1); transition: all 0.3s;
+}
+.author-signature:hover { background: rgba(124, 106, 255, 0.3); color: #fff; }
+.author-signature b { color: #7c6aff; font-style: italic; font-size: 18px; }
+
+/* ЭКРАНЫ */
+.screen {
+  display: none; flex: 1; padding: 30px 20px;
+  max-width: 900px; width: 100%; margin: 0 auto; text-align: center;
+}
+.screen.active {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  animation: fadeIn 0.4s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+
+.main-title {
+  font-size: 54px; margin-bottom: 15px;
+  background: linear-gradient(135deg, #7c6aff, #ff6ac1);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 2px;
+}
+.main-subtitle { font-size: 18px; color: #ccc; margin-bottom: 40px; line-height: 1.6; }
+.map-subtitle { color: #aaa; margin-bottom: 25px; font-size: 16px; }
+
+/* КНОПКИ */
+.btn {
+  padding: 16px 32px; margin: 8px; border: none; border-radius: 15px;
+  font-size: 17px; font-weight: bold; color: #fff; cursor: pointer;
+  transition: all 0.25s; min-width: 160px;
+}
+.btn small { display: block; font-size: 13px; font-weight: normal; opacity: 0.8; margin-top: 4px; }
+.btn-easy { background: linear-gradient(135deg, #2ecc71, #27ae60); box-shadow: 0 6px 20px rgba(46,204,113,0.4); }
+.btn-easy:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(46,204,113,0.6); }
+.btn-hard { background: linear-gradient(135deg, #e74c3c, #c0392b); box-shadow: 0 6px 20px rgba(231,76,60,0.4); }
+.btn-hard:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(231,76,60,0.6); }
+.btn-back { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.btn-back:hover { background: rgba(255,255,255,0.2); }
+.btn:active { transform: translateY(-2px) scale(0.98); }
+
+.difficulty-choice { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+
+/* БЛОК АВТОРА */
+.author-block {
+  margin-top: 50px; padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px; color: #888;
+}
+.author-block b { color: #fff; font-size: 16px; letter-spacing: 1px; }
+.author-nick { margin-top: 6px; font-size: 13px; color: #7c6aff; font-style: italic; }
+
+/* КАРТА УРОВНЕЙ */
+.map-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 20px; max-width: 600px; margin: 0 auto 30px;
+}
+.map-level {
+  background: rgba(255,255,255,0.08); border: 2px solid rgba(124,106,255,0.4);
+  border-radius: 20px; padding: 25px 15px; cursor: pointer;
+  transition: all 0.3s; text-align: center;
+}
+.map-level:hover:not(.locked) {
+  transform: translateY(-6px);
+  border-color: #7c6aff;
+  background: rgba(124,106,255,0.2);
+  box-shadow: 0 10px 30px rgba(124,106,255,0.4);
+}
+.map-level.locked { opacity: 0.5; cursor: not-allowed; }
+.map-level.done { border-color: #2ecc71; background: rgba(46,204,113,0.15); }
+.level-icon { font-size: 48px; margin-bottom: 10px; }
+.level-name { font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+.level-status { font-size: 13px; color: #aaa; }
+.map-level.done .level-status { color: #2ecc71; font-weight: bold; }
+
+/* ИГРА */
+.game-header {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
+}
+.game-header h2 { font-size: 24px; text-align: left; }
+.game-progress {
+  font-size: 14px; padding: 6px 14px; border-radius: 20px;
+  background: rgba(124,106,255,0.2); border: 1px solid rgba(124,106,255,0.4);
+}
+.game-desc { color: #ccc; margin-bottom: 20px; font-size: 15px; line-height: 1.5; }
+
+.robot-area {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 20px; margin-bottom: 25px; width: 100%;
+}
+.robot-face { font-size: 80px; transition: transform 0.3s; }
+.robot-face.happy { animation: bounce 0.5s ease 2; }
+.robot-face.sad { animation: shake 0.5s ease; }
+@keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-20px);} }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+
+.slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.slot {
+  min-width: 130px; padding: 15px 10px; border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 2px dashed rgba(255,255,255,0.3);
+  cursor: pointer; transition: all 0.25s; font-size: 13px; text-align: center;
+}
+.slot.filled { background: rgba(46,204,113,0.25); border: 2px solid #2ecc71; border-style: solid; }
+.slot:hover { border-color: #7c6aff; }
+.slot small { display: block; opacity: 0.6; margin-top: 4px; font-size: 11px; }
+
+.parts {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin-bottom: 20px; min-height: 60px;
+}
+.part {
+  padding: 14px 20px; border-radius: 12px;
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  cursor: pointer; transition: all 0.25s; font-size: 14px; font-weight: bold;
+  border: 2px solid transparent;
+}
+.part:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 20px rgba(52,152,219,0.5); }
+.part.fake { background: linear-gradient(135deg, #e67e22, #d35400); }
+.part.used { opacity: 0.3; pointer-events: none; transform: scale(0.9); }
+
+.game-message { min-height: 30px; font-size: 15px; font-weight: bold; margin-bottom: 15px; transition: all 0.3s; }
+.game-message.ok { color: #2ecc71; }
+.game-message.err { color: #e74c3c; }
+.game-message.info { color: #ffd93d; }
+
+.game-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+
+/* ФУТЕР */
+.site-footer {
+  text-align: center; padding: 15px; font-size: 13px; color: #666;
+  background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05);
+}
+.signature { color: #7c6aff; font-weight: bold; letter-spacing: 1px; font-size: 14px; }
+
+/* АДАПТИВ */
+@media (max-width: 600px) {
+  .main-title { font-size: 36px; }
+  .main-subtitle { font-size: 15px; }
+  .btn { min-width: 140px; padding: 14px 24px; font-size: 15px; }
+  .site-header { padding: 10px 15px; }
+  .logo { font-size: 18px; }
+  .author-signature { font-size: 13px; padding: 4px 10px; }
+  .score-display { font-size: 13px; padding: 4px 10px; }
+  .map-grid { grid-template-columns: 1fr; }
+  .level-icon { font-size: 36px; }
+  .robot-face { font-size: 60px; }
+  .slot { min-width: 100px; padding: 12px 8px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">
+    <span class="logo-icon">💻</span>
+    <span class="logo-text">Код<span class="logo-accent"> 67</span></span>
+  </div>
+  <div class="header-right">
+    <div class="score-display" id="header-score">⭐ 0</div>
+    <div class="author-signature">by <b>Dask</b></div>
+  </div>
+</header>
+
+<!-- ЭКРАН 1 -->
+<main class="screen active" id="screen-start">
+  <h1 class="main-title">Код 67</h1>
+  <p class="main-subtitle">
+    IT-квест для детей.<br>
+    Помоги роботу Робику пройти обучение<br>
+    и стать настоящим программистом!
+  </p>
+  <div class="difficulty-choice">
+    <button class="btn btn-easy" onclick="startGame('easy')">🟢 Лёгкий<br><small>7–10 лет</small></button>
+    <button class="btn btn-hard" onclick="startGame('hard')">🔴 Сложный<br><small>11–14 лет</small></button>
+  </div>
+  <div class="author-block">
+    <p>Автор проекта: <b>Егорова Дарья</b></p>
+    <p class="author-nick">ник: Dask</p>
+  </div>
+</main>
+
+<!-- ЭКРАН 2: КАРТА -->
+<main class="screen" id="screen-map">
+  <h2>🗺️ Карта уровней</h2>
+  <p class="map-subtitle">Сложность: <b id="map-difficulty">Лёгкий</b></p>
+  <div class="map-grid">
+    <div class="map-level" id="lvl-1" onclick="openLevel(1)">
+      <div class="level-icon">🔧</div>
+      <div class="level-name">Ремонт робота</div>
+      <div class="level-status" id="status-1">Доступно</div>
+    </div>
+    <div class="map-level locked" id="lvl-2" onclick="openLevel(2)">
+      <div class="level-icon">🧭</div>
+      <div class="level-name">Курьер</div>
+      <div class="level-status" id="status-2">🔒 Закрыто</div>
+    </div>
+    <div class="map-level locked" id="lvl-3" onclick="openLevel(3)">
+      <div class="level-icon">🕵️</div>
+      <div class="level-name">Взломщик</div>
+      <div class="level-status" id="status-3">🔒 Закрыто</div>
+    </div>
+    <div class="map-level locked" id="lvl-4" onclick="openLevel(4)">
+      <div class="level-icon">🐛</div>
+      <div class="level-name">Баг в коде</div>
+      <div class="level-status" id="status-4">🔒 Закрыто</div>
+    </div>
+  </div>
+  <button class="btn btn-back" onclick="backToStart()">← На главную</button>
+</main>
+
+<!-- ЭКРАН 3: РЕМОНТ РОБОТА -->
+<main class="screen" id="screen-robot">
+  <div class="game-header">
+    <h2>🔧 Ремонт робота Робика</h2>
+    <div class="game-progress" id="robot-progress">Раунд 1 из 3</div>
+  </div>
+  <p id="robot-desc" class="game-desc">Нажми на деталь, чтобы поставить её в нужный слот.</p>
+
+  <div class="robot-area">
+    <div class="robot-face" id="robot-face">🤖</div>
+    <div class="slots" id="robot-slots"></div>
+  </div>
+
+  <div class="parts" id="robot-parts"></div>
+  <div class="game-message" id="robot-message"></div>
+
+  <div class="game-buttons">
+    <button class="btn" onclick="checkRobot()">✓ Проверить</button>
+    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+  </div>
+</main>
+
+<!-- ЭКРАН 4: ЗАГЛУШКА -->
+<main class="screen" id="screen-soon">
+  <h2>🚧 В разработке</h2>
+  <p class="map-subtitle">Эта игра скоро появится!</p>
+  <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+</main>
+
+<footer class="site-footer">
+  <span class="signature">Код 67</span> · by Dask · © 2026 — Егорова Дарья
+</footer>
+
+<script>
+// ===== Код 67 — by Dask · Егорова Дарья =====
+
+const game = {
+  difficulty: 'easy',
+  score: 0,
+  unlockedLevels: 1,
+  completedLevels: [],
+};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startGame(diff) {
+  game.difficulty = diff;
+  game.score = 0;
+  game.unlockedLevels = 1;
+  game.completedLevels = [];
+  updateScore();
+  updateMap();
+  showScreen('screen-map');
+}
+
+function backToStart() { showScreen('screen-start'); }
+function backToMap() { updateMap(); showScreen('screen-map'); }
+
+function updateScore() {
+  document.getElementById('header-score').textContent = '⭐ ' + game.score;
+}
+
+function updateMap() {
+  document.getElementById('map-difficulty').textContent =
+    game.difficulty === 'easy' ? 'Лёгкий' : 'Сложный';
+
+  for (let i = 1; i <= 4; i++) {
+    const lvl = document.getElementById('lvl-' + i);
+    const status = document.getElementById('status-' + i);
+    lvl.classList.remove('locked', 'done');
+
+    if (game.completedLevels.includes(i)) {
+      lvl.classList.add('done');
+      status.textContent = '✓ Пройдено';
+    } else if (i <= game.unlockedLevels) {
+      status.textContent = 'Доступно';
+    } else {
+      lvl.classList.add('locked');
+      status.textContent = '🔒 Закрыто';
+    }
+  }
+}
+
+function openLevel(n) {
+  if (n > game.unlockedLevels) return;
+  if (n === 1) startRobotGame();
+  else showScreen('screen-soon');
+}
+
+// ИГРА 1: РЕМОНТ РОБОТА
+let robot = { round: 1, totalRounds: 1, needed: [], placed: [], available: [] };
+
+function startRobotGame() {
+  robot.round = 1;
+  robot.totalRounds = game.difficulty === 'easy' ? 1 : 3;
+  loadRobotRound();
+  showScreen('screen-robot');
+}
+
+function loadRobotRound() {
+  robot.placed = [];
+
+  if (game.difficulty === 'easy') {
+    robot.needed = [
+      { id: 'cpu', name: '🧠 Процессор' },
+      { id: 'ram', name: '💾 Память' },
+      { id: 'bat', name: '🔋 Батарея' },
+    ];
+    robot.available = [...robot.needed];
+    document.getElementById('robot-desc').textContent =
+      'Нажми на деталь, чтобы поставить её в нужный слот. Собери все 3 детали.';
+  } else {
+    const rounds = [
+      {
+        needed: [
+          { id: 'cpu', name: '🧠 Процессор' },
+          { id: 'cool', name: '❄️ Кулер' },
+          { id: 'mb', name: '🔌 Материнка' },
+        ],
+        fake: [
+          { id: 'fake1', name: '🍕 Пицца', fake: true },
+          { id: 'fake2', name: '🐱 Кот', fake: true },
+        ],
+        desc: 'Раунд 1: собери «мозг» робота — процессор, кулер и материнку. Осторожно, есть обманки!',
+      },
+      {
+        needed: [
+          { id: 'bat', name: '🔋 Батарея 12V' },
+          { id: 'ram', name: '💾 Память' },
+          { id: 'gpu', name: '🎮 Видеокарта' },
+        ],
+        fake: [
+          { id: 'bat5', name: '🔋 Батарея 5V', fake: true },
+          { id: 'fake3', name: '☕ Кофе', fake: true },
+        ],
+        desc: 'Раунд 2: питание и картинка. Выбери правильную батарею — 12V, а не 5V!',
+      },
+      {
+        needed: [
+          { id: 'screen', name: '📺 Экран' },
+          { id: 'keyb', name: '⌨️ Клавиатура' },
+          { id: 'mouse', name: '🖱️ Мышь' },
+        ],
+        fake: [
+          { id: 'fake4', name: '🎈 Шарик', fake: true },
+        ],
+        desc: 'Раунд 3: подключи устройства ввода-вывода. Робот почти готов!',
+      },
+    ];
+
+    const r = rounds[robot.round - 1];
+    robot.needed = r.needed;
+    robot.available = shuffle([...r.needed, ...r.fake]);
+    document.getElementById('robot-desc').textContent = r.desc;
+  }
+
+  document.getElementById('robot-progress').textContent =
+    `Раунд ${robot.round} из ${robot.totalRounds}`;
+
+  renderRobotSlots();
+  renderRobotParts();
+  setRobotMessage('', '');
+}
+
+function renderRobotSlots() {
+  document.getElementById('robot-slots').innerHTML = robot.needed.map(p => {
+    const filled = robot.placed.includes(p.id);
+    return `<div class="slot ${filled ? 'filled' : ''}" data-id="${p.id}" onclick="removeFromSlot('${p.id}')">
+      ${filled ? '✓ ' + p.name : p.name}
+      <small>${filled ? 'стоит' : 'пусто'}</small>
+    </div>`;
+  }).join('');
+}
+
+function renderRobotParts() {
+  document.getElementById('robot-parts').innerHTML = robot.available.map(p => {
+    const used = robot.placed.includes(p.id);
+    return `<div class="part ${p.fake ? 'fake' : ''} ${used ? 'used' : ''}" data-id="${p.id}" onclick="placePart('${p.id}', '${p.name}', ${!!p.fake})">
+      ${p.name}
+    </div>`;
+  }).join('');
+}
+
+function placePart(id, name, isFake) {
+  if (isFake) {
+    game.score = Math.max(0, game.score - 2);
+    updateScore();
+    setRobotMessage('❌ Это не деталь компьютера! −2 очка', 'err');
+    shakeRobot();
+    return;
+  }
+  const needed = robot.needed.find(p => p.id === id);
+  if (!needed) { setRobotMessage('🤔 Эта деталь здесь не нужна.', 'info'); return; }
+  if (robot.placed.includes(id)) return;
+  robot.placed.push(id);
+  renderRobotSlots();
+  renderRobotParts();
+  setRobotMessage('✓ Поставили: ' + name, 'ok');
+}
+
+function removeFromSlot(id) {
+  robot.placed = robot.placed.filter(x => x !== id);
+  renderRobotSlots();
+  renderRobotParts();
+  setRobotMessage('Убрали деталь. Можно поставить другую.', 'info');
+}
+
+function checkRobot() {
+  const allPlaced = robot.needed.every(p => robot.placed.includes(p.id));
+  if (!allPlaced) {
+    setRobotMessage('❌ Не все детали на месте. Проверь слоты!', 'err');
+    shakeRobot();
+    return;
+  }
+  const points = game.difficulty === 'easy' ? 10 : 15;
+  game.score += points;
+  updateScore();
+  happyRobot();
+  setRobotMessage(`✅ Раунд пройден! +${points} очков`, 'ok');
+
+  setTimeout(() => {
+    if (robot.round < robot.totalRounds) {
+      robot.round++;
+      loadRobotRound();
+    } else {
+      finishRobotGame();
+    }
+  }, 1500);
+}
+
+function finishRobotGame() {
+  if (!game.completedLevels.includes(1)) game.completedLevels.push(1);
+  if (game.unlockedLevels < 2) game.unlockedLevels = 2;
+  updateMap();
+  setRobotMessage('🎉 Игра пройдена! Открыт следующий уровень.', 'ok');
+  setTimeout(() => showScreen('screen-map'), 1800);
+}
+
+function setRobotMessage(text, type) {
+  const el = document.getElementById('robot-message');
+  el.textContent = text;
+  el.className = 'game-message ' + (type || '');
+}
+
+function happyRobot() {
+  const face = document.getElementById('robot-face');
+  face.classList.remove('sad');
+  face.classList.add('happy');
+  setTimeout(() => face.classList.remove('happy'), 1200);
+}
+
+function shakeRobot() {
+  const face = document.getElementById('robot-face');
+  face.classList.remove('happy');
+  face.classList.add('sad');
+  setTimeout(() => face.classList.remove('sad'), 600);
+}
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+console.log(
+  '%c Код 67 %c by Dask ',
+  'background:#7c6aff;color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px 0 0 4px;',
+  'background:#24243e;color:#7c6aff;font-style:italic;padding:4px 8px;border-radius:0 4px 4px 0;'
+);
+console.log('Автор проекта: Егорова Дарья');
+</script>
+
+</body>
+</html>
