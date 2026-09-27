@@ -41,9 +41,8 @@ body {
 .author-signature {
   font-size: 15px; color: #aaa; padding: 6px 14px;
   border: 1px solid rgba(124, 106, 255, 0.5); border-radius: 20px;
-  background: rgba(124, 106, 255, 0.1); transition: all 0.3s;
+  background: rgba(124, 106, 255, 0.1);
 }
-.author-signature:hover { background: rgba(124, 106, 255, 0.3); color: #fff; }
 .author-signature b { color: #7c6aff; font-style: italic; font-size: 16px; }
 
 /* ЭКРАНЫ */
@@ -93,7 +92,7 @@ body {
 }
 .author-block b { color: #fff; font-size: 16px; letter-spacing: 1px; }
 
-/* КАРТА УРОВНЕЙ */
+/* КАРТА */
 .map-grid {
   display: grid; grid-template-columns: repeat(2, 1fr);
   gap: 20px; max-width: 600px; margin: 0 auto 30px;
@@ -170,7 +169,7 @@ body {
 
 .game-buttons { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
 
-/* ИГРА 2: КУРЬЕР */
+/* КУРЬЕР */
 .grid-board {
   display: grid; gap: 6px; justify-content: center;
   margin: 20px auto; padding: 15px;
@@ -186,7 +185,6 @@ body {
 .cell.wall { background: rgba(100,100,100,0.4); border: 1px solid #666; }
 .cell.goal { background: rgba(255,217,61,0.2); border: 1px solid #ffd93d; }
 .cell.robot { background: rgba(46,204,113,0.3); border: 1px solid #2ecc71; }
-.cell.visited { background: rgba(124,106,255,0.15); }
 
 .commands-panel {
   display: flex; flex-wrap: wrap; justify-content: center;
@@ -276,10 +274,10 @@ body {
       <div class="level-name">Ремонт робота</div>
       <div class="level-status" id="status-1">Доступно</div>
     </div>
-    <div class="map-level locked" id="lvl-2" onclick="openLevel(2)">
+    <div class="map-level" id="lvl-2" onclick="openLevel(2)">
       <div class="level-icon">🧭</div>
       <div class="level-name">Курьер</div>
-      <div class="level-status" id="status-2">🔒 Закрыто</div>
+      <div class="level-status" id="status-2">Доступно</div>
     </div>
     <div class="map-level locked" id="lvl-3" onclick="openLevel(3)">
       <div class="level-icon">🕵️</div>
@@ -417,9 +415,7 @@ function openLevel(n) {
   else showScreen('screen-soon');
 }
 
-// ============================================================
-// ИГРА 1: РЕМОНТ РОБОТА
-// ============================================================
+// ===== ИГРА 1: РЕМОНТ РОБОТА =====
 let robot = { round: 1, totalRounds: 1, needed: [], placed: [], available: [] };
 
 function startRobotGame() {
@@ -588,9 +584,7 @@ function shakeRobot() {
   setTimeout(() => face.classList.remove('sad'), 600);
 }
 
-// ============================================================
-// ИГРА 2: КУРЬЕР
-// ============================================================
+// ===== ИГРА 2: КУРЬЕР =====
 let courier = {
   size: 3,
   robot: {x:0, y:0},
@@ -728,7 +722,6 @@ function runProgram() {
     steps.push({x, y});
   }
 
-  // Анимация
   let i = 0;
   const animate = () => {
     if (i < steps.length) {
@@ -778,7 +771,6 @@ function setCourierMessage(text, type) {
   el.className = 'game-message ' + (type || '');
 }
 
-// ===== УТИЛИТЫ =====
 function shuffle(a) {
   const arr = [...a];
   for (let i = arr.length - 1; i > 0; i--) {
