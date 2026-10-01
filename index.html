@@ -203,59 +203,67 @@ body {
   font-size: 18px; border: 1px solid rgba(124,106,255,0.6);
 }
 
-/* ВЗЛОМЩИК */
-.threat-box {
-  background: rgba(231, 76, 60, 0.15);
-  border: 2px solid rgba(231, 76, 60, 0.6);
+/* ВЗЛОМЩИК (код) */
+.code-panel {
+  background: rgba(124, 106, 255, 0.1);
+  border: 2px solid rgba(124, 106, 255, 0.4);
   border-radius: 20px; padding: 25px;
-  margin-bottom: 20px; width: 100%; max-width: 600px;
+  margin-bottom: 20px; width: 100%; max-width: 500px;
 }
-.threat-icon { font-size: 60px; margin-bottom: 10px; }
-.threat-title { font-size: 22px; font-weight: bold; color: #e74c3c; margin-bottom: 10px; }
-.threat-desc { font-size: 15px; color: #ccc; line-height: 1.5; }
+.code-title { font-size: 18px; font-weight: bold; color: #7c6aff; margin-bottom: 15px; }
+.code-row {
+  display: flex; justify-content: center; gap: 10px; margin: 15px 0;
+}
+.code-digit-box {
+  width: 60px; height: 70px; border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: bold; transition: all 0.3s;
+}
+.code-digit-box.green { background: rgba(46,204,113,0.4); border-color: #2ecc71; }
+.code-digit-box.yellow { background: rgba(255,217,61,0.4); border-color: #ffd93d; }
+.code-digit-box.gray { background: rgba(100,100,100,0.3); border-color: #666; }
 
-.shield-options {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 15px; max-width: 600px; margin: 0 auto 20px;
+.code-input {
+  display: flex; justify-content: center; gap: 10px; margin: 15px 0;
 }
-.shield-btn {
-  padding: 20px 15px; border-radius: 15px; border: 2px solid rgba(124,106,255,0.4);
-  background: rgba(124,106,255,0.1); color: #fff;
-  font-size: 15px; font-weight: bold; cursor: pointer;
-  transition: all 0.25s;
+.code-input-box {
+  width: 60px; height: 70px; border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(124,106,255,0.6);
+  color: #fff; font-size: 32px; font-weight: bold;
+  text-align: center;
+  transition: all 0.3s;
 }
-.shield-btn:hover {
-  transform: translateY(-4px);
-  background: rgba(124,106,255,0.3);
-  border-color: #7c6aff;
-}
-.shield-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-.shield-btn .shield-icon { display: block; font-size: 32px; margin-bottom: 8px; }
+.code-input-box:focus { outline: none; border-color: #7c6aff; background: rgba(124,106,255,0.2); }
 
-.health-bar {
-  display: flex; justify-content: center; gap: 8px; margin-bottom: 20px;
+.attempts-list {
+  display: flex; flex-direction: column; gap: 10px;
+  max-width: 500px; margin: 0 auto 20px;
 }
-.health-heart {
-  font-size: 28px; transition: all 0.3s;
+.attempt-row {
+  display: flex; justify-content: center; gap: 8px;
+  padding: 10px; border-radius: 12px;
+  background: rgba(0,0,0,0.25);
 }
-.health-heart.lost { opacity: 0.2; filter: grayscale(1); }
+.attempt-digit {
+  width: 45px; height: 45px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: bold;
+}
+.attempt-digit.green { background: rgba(46,204,113,0.5); border: 2px solid #2ecc71; }
+.attempt-digit.yellow { background: rgba(255,217,61,0.5); border: 2px solid #ffd93d; }
+.attempt-digit.gray { background: rgba(100,100,100,0.4); border: 2px solid #666; }
 
-/* БАГ В КОДЕ */
-.code-block {
-  background: rgba(0,0,0,0.5); border-radius: 15px;
-  padding: 20px; margin: 0 auto 20px; max-width: 500px;
-  border: 2px solid rgba(124,106,255,0.4);
-  text-align: left; font-family: 'Consolas', monospace;
+.legend {
+  font-size: 13px; color: #aaa; margin-bottom: 15px;
 }
-.code-line {
-  padding: 10px 15px; margin: 5px 0; border-radius: 8px;
-  background: rgba(124,106,255,0.15); font-size: 15px;
-  cursor: pointer; transition: all 0.2s;
-  border: 2px solid transparent;
-}
-.code-line:hover { background: rgba(124,106,255,0.3); border-color: #7c6aff; }
-.code-line.correct { background: rgba(46,204,113,0.3); border-color: #2ecc71; }
-.code-line.wrong { background: rgba(231,76,60,0.3); border-color: #e74c3c; }
+.legend span { margin: 0 8px; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+.dot-green { background: #2ecc71; }
+.dot-yellow { background: #ffd93d; }
+.dot-gray { background: #666; }
 
 .site-footer {
   text-align: center; padding: 15px; font-size: 13px; color: #666;
@@ -276,7 +284,9 @@ body {
   .robot-face { font-size: 60px; }
   .slot { min-width: 100px; padding: 12px 8px; }
   .cell { width: 45px; height: 45px; font-size: 20px; }
-  .shield-options { grid-template-columns: 1fr; }
+  .code-input-box { width: 48px; height: 58px; font-size: 24px; }
+  .code-digit-box { width: 48px; height: 58px; font-size: 24px; }
+  .attempt-digit { width: 36px; height: 36px; font-size: 18px; }
 }
 </style>
 </head>
@@ -330,10 +340,10 @@ body {
       <div class="level-name">Взломщик</div>
       <div class="level-status" id="status-3">Доступно</div>
     </div>
-    <div class="map-level" id="lvl-4" onclick="openLevel(4)">
+    <div class="map-level locked" id="lvl-4" onclick="openLevel(4)">
       <div class="level-icon">🐛</div>
       <div class="level-name">Баг в коде</div>
-      <div class="level-status" id="status-4">Доступно</div>
+      <div class="level-status" id="status-4">🔒 Скоро</div>
     </div>
   </div>
   <button class="btn btn-back" onclick="backToStart()">← На главную</button>
@@ -388,47 +398,37 @@ body {
   </div>
 </main>
 
-<!-- ЭКРАН 5: ВЗЛОМЩИК -->
+<!-- ЭКРАН 5: ВЗЛОМЩИК (УГАДАЙ КОД) -->
 <main class="screen" id="screen-hacker">
   <div class="game-header">
-    <h2>🕵️ Взломщик и защитник</h2>
-    <div class="game-progress" id="hacker-progress">Волна 1 из 3</div>
+    <h2>🕵️ Взломщик: угадай код</h2>
+    <div class="game-progress" id="hacker-progress">Попытка 1 из 8</div>
   </div>
-  <p class="game-desc">Защити сервер! Выбери правильную защиту от каждой атаки.</p>
+  <p class="game-desc" id="hacker-desc">
+    Хакер загадал 4-значный код. Введи свою догадку — и увидишь, какие цифры угаданы.
+  </p>
 
-  <div class="health-bar" id="hacker-health"></div>
-
-  <div class="threat-box">
-    <div class="threat-icon" id="hacker-icon">⚠️</div>
-    <div class="threat-title" id="hacker-title">Атака</div>
-    <div class="threat-desc" id="hacker-desc">Описание</div>
+  <div class="legend">
+    <span><span class="dot dot-green"></span>на своём месте</span>
+    <span><span class="dot dot-yellow"></span>есть, но не там</span>
+    <span><span class="dot dot-gray"></span>нет в коде</span>
   </div>
 
-  <div class="shield-options" id="hacker-shields"></div>
+  <div class="code-input" id="hacker-input">
+    <input class="code-input-box" maxlength="1" inputmode="numeric" data-i="0">
+    <input class="code-input-box" maxlength="1" inputmode="numeric" data-i="1">
+    <input class="code-input-box" maxlength="1" inputmode="numeric" data-i="2">
+    <input class="code-input-box" maxlength="1" inputmode="numeric" data-i="3">
+  </div>
+
+  <div class="game-buttons">
+    <button class="btn btn-run" onclick="checkHackerCode()">🔍 Проверить</button>
+    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+  </div>
 
   <div class="game-message" id="hacker-message"></div>
 
-  <div class="game-buttons">
-    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
-  </div>
-</main>
-
-<!-- ЭКРАН 6: БАГ В КОДЕ -->
-<main class="screen" id="screen-bug">
-  <div class="game-header">
-    <h2>🐛 Баг в коде</h2>
-    <div class="game-progress" id="bug-progress">Баг 1 из 3</div>
-  </div>
-  <p class="game-desc">Робот выполнил программу неправильно. Найди строку с ошибкой!</p>
-
-  <p id="bug-task" class="game-desc"></p>
-  <div class="code-block" id="bug-code"></div>
-
-  <div class="game-message" id="bug-message"></div>
-
-  <div class="game-buttons">
-    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
-  </div>
+  <div class="attempts-list" id="hacker-attempts"></div>
 </main>
 
 <footer class="site-footer">
@@ -441,7 +441,7 @@ body {
 const game = {
   difficulty: 'easy',
   score: 0,
-  unlockedLevels: 4,
+  unlockedLevels: 3,
   completedLevels: [],
 };
 
@@ -454,7 +454,7 @@ function showScreen(id) {
 function startGame(diff) {
   game.difficulty = diff;
   game.score = 0;
-  game.unlockedLevels = 4;
+  game.unlockedLevels = 3;
   game.completedLevels = [];
   updateScore();
   updateMap();
@@ -477,6 +477,12 @@ function updateMap() {
     const status = document.getElementById('status-' + i);
     lvl.classList.remove('locked', 'done');
 
+    if (i === 4) {
+      lvl.classList.add('locked');
+      status.textContent = '🔒 Скоро';
+      continue;
+    }
+
     if (game.completedLevels.includes(i)) {
       lvl.classList.add('done');
       status.textContent = '✓ Пройдено';
@@ -494,7 +500,6 @@ function openLevel(n) {
   if (n === 1) startRobotGame();
   else if (n === 2) startCourierGame();
   else if (n === 3) startHackerGame();
-  else if (n === 4) startBugGame();
 }
 
 // ===== ИГРА 1: РЕМОНТ РОБОТА =====
@@ -811,99 +816,147 @@ function setCourierMessage(text, type) {
   el.className = 'game-message ' + (type || '');
 }
 
-// ===== ИГРА 3: ВЗЛОМЩИК =====
-let hacker = { wave: 1, totalWaves: 3, hp: 3, maxHp: 3 };
-
-const threats = [
-  { icon: '📧', title: 'Фишинг!', desc: 'Мошенники прислали письмо с поддельной ссылкой. Сотрудник может ввести свой пароль.', correct: 'training' },
-  { icon: '💥', title: 'DDoS-атака!', desc: 'Тысячи запросов пытаются перегрузить сервер и положить его.', correct: 'firewall' },
-  { icon: '🦠', title: 'Вирус!', desc: 'Вредоносная программа проникла через флешку. Нужно её найти и удалить.', correct: 'antivirus' },
-  { icon: '🔑', title: 'Подбор пароля!', desc: 'Хакер пытается угадать пароль администратора перебором.', correct: 'password' },
-  { icon: '📁', title: 'Утечка данных!', desc: 'Файлы сервера повреждены. Нужно восстановить их из копии.', correct: 'backup' },
-];
-
-const shields = [
-  { id: 'firewall', icon: '🔥', name: 'Файрвол', desc: 'Ставит стену от атак' },
-  { id: 'antivirus', icon: '🛡️', name: 'Антивирус', desc: 'Находит вирусы' },
-  { id: 'training', icon: '🎓', name: 'Обучение', desc: 'Учит сотрудников' },
-  { id: 'password', icon: '🔐', name: 'Пароли', desc: 'Усиливает защиту' },
-  { id: 'backup', icon: '💾', name: 'Бэкап', desc: 'Восстанавливает данные' },
-];
+// ===== ИГРА 3: ВЗЛОМЩИК (угадай код) =====
+let hacker = {
+  secret: [],
+  attempts: [],
+  maxAttempts: 8,
+};
 
 function startHackerGame() {
-  hacker.wave = 1;
-  hacker.totalWaves = game.difficulty === 'easy' ? 2 : 3;
-  hacker.maxHp = game.difficulty === 'easy' ? 3 : 2;
-  hacker.hp = hacker.maxHp;
-  loadHackerWave();
+  // Загадываем 4 цифры, могут повторяться
+  hacker.secret = [];
+  for (let i = 0; i < 4; i++) {
+    hacker.secret.push(Math.floor(Math.random() * 10));
+  }
+  hacker.attempts = [];
+  hacker.maxAttempts = game.difficulty === 'easy' ? 8 : 6;
+
+  document.getElementById('hacker-progress').textContent =
+    `Попытка 1 из ${hacker.maxAttempts}`;
+
+  document.getElementById('hacker-desc').textContent =
+    game.difficulty === 'easy'
+      ? 'Хакер загадал 4-значный код. Введи догадку — и увидишь, какие цифры угаданы.'
+      : 'Хакер загадал 4-значный код. У тебя меньше попыток — думай!';
+
+  document.getElementById('hacker-attempts').innerHTML = '';
+  document.getElementById('hacker-message').textContent = '';
+  document.getElementById('hacker-message').className = 'game-message';
+
+  const inputs = document.querySelectorAll('.code-input-box');
+  inputs.forEach(inp => {
+    inp.value = '';
+    inp.disabled = false;
+  });
+  inputs[0].focus();
+
   showScreen('screen-hacker');
 }
 
-function loadHackerWave() {
-  renderHackerHealth();
-  document.getElementById('hacker-progress').textContent =
-    `Волна ${hacker.wave} из ${hacker.totalWaves}`;
-
-  const threat = threats[Math.floor(Math.random() * threats.length)];
-  hacker.currentThreat = threat;
-
-  document.getElementById('hacker-icon').textContent = threat.icon;
-  document.getElementById('hacker-title').textContent = threat.title;
-  document.getElementById('hacker-desc').textContent = threat.desc;
-
-  const shuffled = shuffle([...shields]);
-  document.getElementById('hacker-shields').innerHTML = shuffled.map(s =>
-    `<button class="shield-btn" onclick="chooseShield('${s.id}')">
-      <span class="shield-icon">${s.icon}</span>
-      ${s.name}
-    </button>`
-  ).join('');
-
-  setHackerMessage('', '');
-}
-
-function renderHackerHealth() {
-  let html = '';
-  for (let i = 0; i < hacker.maxHp; i++) {
-    html += `<span class="health-heart ${i < hacker.hp ? '' : 'lost'}">❤️</span>`;
+// Автопереход между полями ввода + только цифры
+document.addEventListener('input', e => {
+  if (!e.target.classList.contains('code-input-box')) return;
+  e.target.value = e.target.value.replace(/\D/g, '');
+  const i = parseInt(e.target.dataset.i);
+  if (e.target.value && i < 3) {
+    document.querySelector(`.code-input-box[data-i="${i+1}"]`).focus();
   }
-  document.getElementById('hacker-health').innerHTML = html;
-}
+});
 
-function chooseShield(id) {
-  document.querySelectorAll('.shield-btn').forEach(b => b.disabled = true);
+// Enter — проверить
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('screen-hacker').classList.contains('active')) {
+    checkHackerCode();
+  }
+});
 
-  if (id === hacker.currentThreat.correct) {
-    const points = game.difficulty === 'easy' ? 10 : 15;
-    game.score += points;
-    updateScore();
-    setHackerMessage(`✅ Верно! +${points} очков`, 'ok');
+function checkHackerCode() {
+  const inputs = document.querySelectorAll('.code-input-box');
+  const guess = [];
+  for (const inp of inputs) {
+    if (inp.value === '') {
+      setHackerMessage('⚠️ Заполни все 4 цифры!', 'info');
+      return;
+    }
+    guess.push(parseInt(inp.value));
+  }
 
-    setTimeout(() => {
-      if (hacker.wave < hacker.totalWaves) {
-        hacker.wave++;
-        loadHackerWave();
-      } else {
-        finishLevel(3);
-      }
-    }, 1500);
-  } else {
-    hacker.hp--;
-    renderHackerHealth();
-    setHackerMessage('❌ Не та защита! Сервер теряет здоровье.', 'err');
+  // Считаем результат: зелёный / жёлтый / серый
+  const result = [];
+  const secretCopy = [...hacker.secret];
+  const guessCopy = [...guess];
 
-    if (hacker.hp <= 0) {
-      setTimeout(() => {
-        setHackerMessage('💥 Сервер упал! Попробуй заново.', 'err');
-        setTimeout(() => startHackerGame(), 2000);
-      }, 1000);
+  // Первый проход — зелёные
+  for (let i = 0; i < 4; i++) {
+    if (guessCopy[i] === secretCopy[i]) {
+      result[i] = 'green';
+      secretCopy[i] = null;
+      guessCopy[i] = null;
     } else {
-      setTimeout(() => {
-        document.querySelectorAll('.shield-btn').forEach(b => b.disabled = false);
-        setHackerMessage('Попробуй другую защиту!', 'info');
-      }, 1500);
+      result[i] = null;
     }
   }
+
+  // Второй проход — жёлтые
+  for (let i = 0; i < 4; i++) {
+    if (guessCopy[i] === null) continue;
+    const idx = secretCopy.indexOf(guessCopy[i]);
+    if (idx !== -1) {
+      result[i] = 'yellow';
+      secretCopy[idx] = null;
+    } else {
+      result[i] = 'gray';
+    }
+  }
+
+  hacker.attempts.push({ guess: [...guess], result: [...result] });
+
+  // Проверка на победу
+  const won = result.every(r => r === 'green');
+
+  renderHackerAttempts();
+
+  if (won) {
+    const points = game.difficulty === 'easy' ? 20 : 30;
+    game.score += points;
+    updateScore();
+    setHackerMessage(`🎉 Код взломан! +${points} очков`, 'ok');
+    document.querySelectorAll('.code-input-box').forEach(inp => inp.disabled = true);
+    setTimeout(() => finishLevel(3), 2000);
+    return;
+  }
+
+  // Проверка на проигрыш
+  if (hacker.attempts.length >= hacker.maxAttempts) {
+    setHackerMessage(`💥 Попытки кончились! Код был: ${hacker.secret.join('')}`, 'err');
+    document.querySelectorAll('.code-input-box').forEach(inp => inp.disabled = true);
+    setTimeout(() => startHackerGame(), 3000);
+    return;
+  }
+
+  // Продолжаем
+  document.getElementById('hacker-progress').textContent =
+    `Попытка ${hacker.attempts.length + 1} из ${hacker.maxAttempts}`;
+
+  setHackerMessage('Попробуй ещё! Смотри цвета подсказок.', 'info');
+
+  // Очищаем поля
+  document.querySelectorAll('.code-input-box').forEach(inp => {
+    inp.value = '';
+  });
+  document.querySelector('.code-input-box[data-i="0"]').focus();
+}
+
+function renderHackerAttempts() {
+  const list = document.getElementById('hacker-attempts');
+  list.innerHTML = hacker.attempts.map(att =>
+    `<div class="attempt-row">
+      ${att.guess.map((d, i) =>
+        `<div class="attempt-digit ${att.result[i]}">${d}</div>`
+      ).join('')}
+    </div>`
+  ).join('');
 }
 
 function setHackerMessage(text, type) {
@@ -912,96 +965,10 @@ function setHackerMessage(text, type) {
   el.className = 'game-message ' + (type || '');
 }
 
-// ===== ИГРА 4: БАГ В КОДЕ =====
-let bug = { round: 1, totalRounds: 1 };
-
-function startBugGame() {
-  bug.round = 1;
-  bug.totalRounds = game.difficulty === 'easy' ? 1 : 3;
-  loadBugRound();
-  showScreen('screen-bug');
-}
-
-function loadBugRound() {
-  document.getElementById('bug-progress').textContent =
-    `Баг ${bug.round} из ${bug.totalRounds}`;
-
-  let task, lines, bugIndex;
-
-  if (bug.round === 1 || game.difficulty === 'easy') {
-    task = '🤖 Робот должен дойти до 🎯 цели и сказать «Готово!». Где ошибка?';
-    lines = [
-      'шаг вперёд',
-      'шаг вперёд',
-      'поверни налево',  // ← баг (надо направо)
-      'шаг вперёд',
-      'скажи «Готово!»'
-    ];
-    bugIndex = 2;
-  } else if (bug.round === 2) {
-    task = '🤖 Робот должен посчитать от 1 до 3. Где ошибка?';
-    lines = [
-      'счёт = 0',
-      'пока счёт < 3:',
-      '   счёт = счёт + 1',
-      '   скажи счёт',
-      'скажи «Готово!»'
-    ];
-    bugIndex = 3; // лишняя строка — счёт уже выводится
-  } else {
-    task = '🤖 Робот должен идти, пока не встретит стену. Где ошибка?';
-    lines = [
-      'пока впереди стена:',
-      '   шаг вперёд',
-      'скажи «Стена!»'
-    ];
-    bugIndex = 0; // условие наоборот — надо «пока НЕ стена»
-  }
-
-  bug.bugIndex = bugIndex;
-  document.getElementById('bug-task').textContent = task;
-  document.getElementById('bug-code').innerHTML = lines.map((line, i) =>
-    `<div class="code-line" data-i="${i}" onclick="chooseBugLine(${i})">${line}</div>`
-  ).join('');
-
-  setBugMessage('', '');
-}
-
-function chooseBugLine(i) {
-  const line = document.querySelector(`.code-line[data-i="${i}"]`);
-  if (line.classList.contains('correct') || line.classList.contains('wrong')) return;
-
-  if (i === bug.bugIndex) {
-    line.classList.add('correct');
-    const points = game.difficulty === 'easy' ? 10 : 15;
-    game.score += points;
-    updateScore();
-    setBugMessage(`✅ Правильно! +${points} очков`, 'ok');
-
-    setTimeout(() => {
-      if (bug.round < bug.totalRounds) {
-        bug.round++;
-        loadBugRound();
-      } else {
-        finishLevel(4);
-      }
-    }, 1800);
-  } else {
-    line.classList.add('wrong');
-    setBugMessage('❌ Это правильная строка. Ищи другую.', 'err');
-  }
-}
-
-function setBugMessage(text, type) {
-  const el = document.getElementById('bug-message');
-  el.textContent = text;
-  el.className = 'game-message ' + (type || '');
-}
-
 // ===== ОБЩЕЕ =====
 function finishLevel(n) {
   if (!game.completedLevels.includes(n)) game.completedLevels.push(n);
-  if (game.unlockedLevels < n + 1 && n < 4) game.unlockedLevels = n + 1;
+  if (game.unlockedLevels < n + 1 && n < 3) game.unlockedLevels = n + 1;
   updateMap();
   setTimeout(() => showScreen('screen-map'), 1500);
 }
