@@ -210,6 +210,62 @@ body {
   font-size: 18px; border: 1px solid rgba(124,106,255,0.6);
 }
 
+/* ВЗЛОМЩИК */
+.hacker-input-row {
+  display: flex; gap: 10px; justify-content: center;
+  margin: 15px 0; flex-wrap: wrap;
+}
+#hacker-input {
+  padding: 14px 20px; font-size: 24px; letter-spacing: 8px;
+  text-align: center; width: 180px;
+  border-radius: 12px; border: 2px solid rgba(124,106,255,0.6);
+  background: rgba(0,0,0,0.4); color: #fff; font-weight: bold;
+  outline: none;
+}
+#hacker-input:focus { border-color: #7c6aff; box-shadow: 0 0 20px rgba(124,106,255,0.5); }
+
+.hacker-history {
+  display: flex; flex-direction: column; gap: 8px;
+  margin: 10px 0; max-width: 320px; width: 100%;
+}
+.hacker-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 15px; border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border-left: 4px solid #7c6aff;
+  font-family: 'Courier New', monospace;
+}
+.hacker-row.win { border-left-color: #2ecc71; background: rgba(46,204,113,0.15); }
+.hacker-guess { font-size: 22px; font-weight: bold; letter-spacing: 4px; }
+.hacker-feedback { font-size: 20px; letter-spacing: 3px; }
+
+.hacker-hint-legend {
+  display: flex; gap: 20px; justify-content: center;
+  font-size: 13px; color: #aaa; margin: 10px 0; flex-wrap: wrap;
+}
+
+/* БАГ В КОДЕ */
+.code-block {
+  background: #0d0d1a; border: 2px solid rgba(124,106,255,0.4);
+  border-radius: 15px; padding: 20px; text-align: left;
+  font-family: 'Courier New', monospace; font-size: 15px;
+  line-height: 1.8; color: #e0e0e0; margin: 15px 0;
+  max-width: 600px; width: 100%; overflow-x: auto;
+  white-space: pre-wrap; word-break: break-word;
+}
+.code-line {
+  display: block; padding: 4px 10px; border-radius: 6px;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.code-line:hover { background: rgba(124,106,255,0.2); border-color: rgba(124,106,255,0.5); }
+.code-line.correct { background: rgba(46,204,113,0.3); border-color: #2ecc71; cursor: default; }
+.code-line.wrong { background: rgba(231,76,60,0.3); border-color: #e74c3c; }
+.code-line.locked { cursor: not-allowed; }
+.code-line .ln {
+  display: inline-block; width: 25px; color: #666; user-select: none;
+}
+
 /* ФУТЕР */
 .site-footer {
   text-align: center; padding: 15px; font-size: 13px; color: #666;
@@ -231,6 +287,9 @@ body {
   .robot-face { font-size: 60px; }
   .slot { min-width: 100px; padding: 12px 8px; }
   .cell { width: 45px; height: 45px; font-size: 20px; }
+  #hacker-input { font-size: 20px; width: 150px; }
+  .hacker-guess { font-size: 18px; }
+  .code-block { font-size: 13px; padding: 14px; }
 }
 </style>
 </head>
@@ -343,11 +402,55 @@ body {
   </div>
 </main>
 
-<!-- ЭКРАН 5: ЗАГЛУШКА -->
-<main class="screen" id="screen-soon">
-  <h2>🚧 В разработке</h2>
-  <p class="map-subtitle">Эта игра скоро появится!</p>
-  <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+<!-- ЭКРАН 5: ВЗЛОМЩИК -->
+<main class="screen" id="screen-hacker">
+  <div class="game-header">
+    <h2>🕵️ Робот-взломщик</h2>
+    <div class="game-progress" id="hacker-progress">Раунд 1 из 3</div>
+  </div>
+  <p id="hacker-desc" class="game-desc">Подбери пароль! После каждой попытки — подсказка.</p>
+
+  <div class="robot-area">
+    <div class="robot-face" id="hacker-face">🤖</div>
+    <div class="hacker-history" id="hacker-history"></div>
+  </div>
+
+  <div class="hacker-input-row">
+    <input type="text" id="hacker-input" maxlength="4" placeholder="0000"
+           onkeydown="if(event.key==='Enter')checkHack()">
+    <button class="btn btn-run" onclick="checkHack()">🔓 Взломать</button>
+  </div>
+
+  <div class="hacker-hint-legend">
+    <span>🟢 — цифра угадана и на месте</span>
+    <span>🟡 — цифра есть, но не там</span>
+  </div>
+
+  <div class="game-message" id="hacker-message"></div>
+
+  <div class="game-buttons">
+    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+  </div>
+</main>
+
+<!-- ЭКРАН 6: БАГ В КОДЕ -->
+<main class="screen" id="screen-bug">
+  <div class="game-header">
+    <h2>🐛 Охота на баги</h2>
+    <div class="game-progress" id="bug-progress">Раунд 1 из 3</div>
+  </div>
+  <p id="bug-desc" class="game-desc">Найди строку с ошибкой и нажми на неё.</p>
+
+  <div class="robot-area">
+    <div class="robot-face" id="bug-face">🤖</div>
+  </div>
+
+  <pre class="code-block" id="bug-code"></pre>
+  <div class="game-message" id="bug-message"></div>
+
+  <div class="game-buttons">
+    <button class="btn btn-back" onclick="backToMap()">← На карту</button>
+  </div>
 </main>
 
 <footer class="site-footer">
@@ -412,7 +515,8 @@ function openLevel(n) {
   if (n > game.unlockedLevels) return;
   if (n === 1) startRobotGame();
   else if (n === 2) startCourierGame();
-  else showScreen('screen-soon');
+  else if (n === 3) startHackerGame();
+  else if (n === 4) startBugGame();
 }
 
 // ===== ИГРА 1: РЕМОНТ РОБОТА =====
@@ -759,7 +863,7 @@ function runProgram() {
 
 function finishCourierGame() {
   if (!game.completedLevels.includes(2)) game.completedLevels.push(2);
-  if (game.unlockedLevels < 4) game.unlockedLevels = 4;
+  if (game.unlockedLevels < 3) game.unlockedLevels = 3;
   updateMap();
   setCourierMessage('🎉 Игра пройдена! Открыт следующий уровень.', 'ok');
   setTimeout(() => showScreen('screen-map'), 1800);
@@ -771,6 +875,306 @@ function setCourierMessage(text, type) {
   el.className = 'game-message ' + (type || '');
 }
 
+// ===== ИГРА 3: ВЗЛОМЩИК =====
+let hacker = { round: 1, totalRounds: 3, secret: '', attempts: 0, history: [] };
+
+function startHackerGame() {
+  hacker.round = 1;
+  hacker.totalRounds = game.difficulty === 'easy' ? 2 : 3;
+  loadHackerRound();
+  showScreen('screen-hacker');
+}
+
+function loadHackerRound() {
+  hacker.attempts = 0;
+  hacker.history = [];
+  hacker.secret = generateSecret();
+
+  document.getElementById('hacker-progress').textContent =
+    `Раунд ${hacker.round} из ${hacker.totalRounds}`;
+  document.getElementById('hacker-desc').textContent =
+    game.difficulty === 'easy'
+      ? 'Угадай 4-значный пароль. Цифры могут повторяться. Используй подсказки!'
+      : 'Угадай 4-значный пароль. Цифры не повторяются. Подсказки: 🟢 на месте, 🟡 не там.';
+
+  document.getElementById('hacker-input').value = '';
+  document.getElementById('hacker-input').disabled = false;
+  renderHackerHistory();
+  setHackerMessage('', '');
+  document.getElementById('hacker-face').textContent = '🤖';
+}
+
+function generateSecret() {
+  const digits = '0123456789';
+  if (game.difficulty === 'easy') {
+    let s = '';
+    for (let i = 0; i < 4; i++) s += digits[Math.floor(Math.random() * 10)];
+    return s;
+  } else {
+    const arr = digits.split('');
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, 4).join('');
+  }
+}
+
+function checkHack() {
+  const input = document.getElementById('hacker-input');
+  const guess = input.value.trim();
+
+  if (!/^\d{4}$/.test(guess)) {
+    setHackerMessage('❌ Введи ровно 4 цифры!', 'err');
+    shakeHacker();
+    return;
+  }
+
+  hacker.attempts++;
+  const feedback = getFeedback(guess, hacker.secret);
+  const win = guess === hacker.secret;
+
+  hacker.history.push({ guess, feedback, win });
+  renderHackerHistory();
+  input.value = '';
+
+  if (win) {
+    document.getElementById('hacker-face').textContent = '🤩';
+    const points = game.difficulty === 'easy' ? 10 : 15;
+    game.score += points;
+    updateScore();
+    setHackerMessage(`✅ Взломано за ${hacker.attempts} попыток! +${points} очков`, 'ok');
+    input.disabled = true;
+
+    setTimeout(() => {
+      if (hacker.round < hacker.totalRounds) {
+        hacker.round++;
+        loadHackerRound();
+      } else {
+        finishHackerGame();
+      }
+    }, 1800);
+  } else {
+    setHackerMessage('🔍 Неверно. Смотри подсказки!', 'info');
+    shakeHacker();
+  }
+}
+
+function getFeedback(guess, secret) {
+  let green = 0, yellow = 0;
+  const sArr = secret.split('');
+  const gArr = guess.split('');
+  const usedS = new Array(4).fill(false);
+  const usedG = new Array(4).fill(false);
+
+  for (let i = 0; i < 4; i++) {
+    if (gArr[i] === sArr[i]) { green++; usedS[i] = true; usedG[i] = true; }
+  }
+  for (let i = 0; i < 4; i++) {
+    if (usedG[i]) continue;
+    for (let j = 0; j < 4; j++) {
+      if (!usedS[j] && gArr[i] === sArr[j]) { yellow++; usedS[j] = true; break; }
+    }
+  }
+  return { green, yellow };
+}
+
+function renderHackerHistory() {
+  const el = document.getElementById('hacker-history');
+  el.innerHTML = hacker.history.map(h => {
+    let dots = '';
+    for (let i = 0; i < h.feedback.green; i++) dots += '🟢';
+    for (let i = 0; i < h.feedback.yellow; i++) dots += '🟡';
+    for (let i = 0; i < 4 - h.feedback.green - h.feedback.yellow; i++) dots += '⚫';
+    return `<div class="hacker-row ${h.win ? 'win' : ''}">
+      <span class="hacker-guess">${h.guess}</span>
+      <span class="hacker-feedback">${dots}</span>
+    </div>`;
+  }).join('');
+}
+
+function finishHackerGame() {
+  if (!game.completedLevels.includes(3)) game.completedLevels.push(3);
+  if (game.unlockedLevels < 4) game.unlockedLevels = 4;
+  updateMap();
+  setHackerMessage('🎉 Все пароли взломаны! Открыт следующий уровень.', 'ok');
+  setTimeout(() => showScreen('screen-map'), 1800);
+}
+
+function setHackerMessage(text, type) {
+  const el = document.getElementById('hacker-message');
+  el.textContent = text;
+  el.className = 'game-message ' + (type || '');
+}
+
+function shakeHacker() {
+  const f = document.getElementById('hacker-face');
+  f.classList.remove('happy');
+  f.classList.add('sad');
+  setTimeout(() => f.classList.remove('sad'), 600);
+}
+
+// ===== ИГРА 4: БАГ В КОДЕ =====
+let bugGame = { round: 1, totalRounds: 3, current: null };
+
+const BUG_ROUNDS_EASY = [
+  {
+    desc: 'Робот должен поздороваться 3 раза. Найди строку с ошибкой:',
+    lines: [
+      'let count = 0;',
+      'while (count < 3) {',
+      '  print("Привет!");',
+      '  count = count + 2;',
+      '}',
+    ],
+    bugIndex: 3,
+    explain: 'count + 2 увеличивает счётчик слишком быстро: цикл выполнится 2 раза, а не 3. Нужно count + 1.',
+  },
+  {
+    desc: 'Робот считает сумму чисел от 1 до 5. Найди ошибку:',
+    lines: [
+      'let sum = 0;',
+      'for (let i = 1; i <= 5; i++) {',
+      '  sum = sum - i;',
+      '}',
+      'print(sum);',
+    ],
+    bugIndex: 2,
+    explain: 'Знак минус вместо плюса! Должно быть sum = sum + i, иначе получится отрицательное число.',
+  },
+  {
+    desc: 'Робот проверяет, чётное ли число. Где баг?',
+    lines: [
+      'let n = 4;',
+      'if (n % 2 = 0) {',
+      '  print("Чётное");',
+      '} else {',
+      '  print("Нечётное");',
+      '}',
+    ],
+    bugIndex: 1,
+    explain: 'В условии нужно ==, а не =. Одиночное = это присваивание, а не сравнение.',
+  },
+];
+
+const BUG_ROUNDS_HARD = [
+  {
+    desc: 'Функция должна вернуть длину массива. Найди баг:',
+    lines: [
+      'function getLength(arr) {',
+      '  for (let i = 0; i < arr.length; i++) {}',
+      '  return i;',
+      '}',
+    ],
+    bugIndex: 2,
+    explain: 'Переменная i объявлена через let внутри for — снаружи она не видна. Нужно return arr.length.',
+  },
+  {
+    desc: 'Робот ищет максимум в массиве. Где ошибка?',
+    lines: [
+      'let arr = [3, 7, 1, 9, 4];',
+      'let max = 0;',
+      'for (let i = 0; i < arr.length; i++) {',
+      '  if (arr[i] > max) max = arr[i];',
+      '}',
+      'print(max);',
+    ],
+    bugIndex: 1,
+    explain: 'max = 0 — если все числа отрицательные, ответ будет неверным. Нужно max = arr[0].',
+  },
+  {
+    desc: 'Проверка на простое число. Найди баг:',
+    lines: [
+      'function isPrime(n) {',
+      '  for (let i = 2; i < n; i++) {',
+      '    if (n % i == 0) return false;',
+      '  }',
+      '  return true;',
+      '}',
+      'print(isPrime(1));',
+    ],
+    bugIndex: 4,
+    explain: 'Для n = 1 функция вернёт true, но 1 не простое число. Нужна проверка if (n < 2) return false.',
+  },
+];
+
+function startBugGame() {
+  bugGame.round = 1;
+  bugGame.totalRounds = 3;
+  loadBugRound();
+  showScreen('screen-bug');
+}
+
+function loadBugRound() {
+  const pool = game.difficulty === 'easy' ? BUG_ROUNDS_EASY : BUG_ROUNDS_HARD;
+  bugGame.current = pool[(bugGame.round - 1) % pool.length];
+
+  document.getElementById('bug-progress').textContent =
+    `Раунд ${bugGame.round} из ${bugGame.totalRounds}`;
+  document.getElementById('bug-desc').textContent = bugGame.current.desc;
+  document.getElementById('bug-face').textContent = '🤖';
+
+  renderBugCode();
+  setBugMessage('', '');
+}
+
+function renderBugCode() {
+  const el = document.getElementById('bug-code');
+  el.innerHTML = bugGame.current.lines.map((line, i) => {
+    const safe = line.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `<span class="code-line" data-i="${i}" onclick="clickBugLine(${i})"><span class="ln">${i + 1}</span>${safe}</span>`;
+  }).join('\n');
+}
+
+function clickBugLine(i) {
+  const lines = document.querySelectorAll('#bug-code .code-line');
+  if (lines[i].classList.contains('locked')) return;
+
+  if (i === bugGame.current.bugIndex) {
+    lines[i].classList.add('correct');
+    lines.forEach(l => l.classList.add('locked'));
+    document.getElementById('bug-face').textContent = '🤩';
+
+    const points = game.difficulty === 'easy' ? 10 : 15;
+    game.score += points;
+    updateScore();
+    setBugMessage(`✅ Баг найден! +${points} очков. ${bugGame.current.explain}`, 'ok');
+
+    setTimeout(() => {
+      if (bugGame.round < bugGame.totalRounds) {
+        bugGame.round++;
+        loadBugRound();
+      } else {
+        finishBugGame();
+      }
+    }, 2800);
+  } else {
+    lines[i].classList.add('wrong');
+    lines[i].classList.add('locked');
+    game.score = Math.max(0, game.score - 2);
+    updateScore();
+    setBugMessage('❌ Тут бага нет. −2 очка. Попробуй другую строку.', 'err');
+    const f = document.getElementById('bug-face');
+    f.classList.remove('happy');
+    f.classList.add('sad');
+    setTimeout(() => f.classList.remove('sad'), 600);
+  }
+}
+
+function finishBugGame() {
+  if (!game.completedLevels.includes(4)) game.completedLevels.push(4);
+  updateMap();
+  setBugMessage('🎉 Все баги пойманы! Ты настоящий программист!', 'ok');
+  setTimeout(() => showScreen('screen-map'), 2000);
+}
+
+function setBugMessage(text, type) {
+  const el = document.getElementById('bug-message');
+  el.textContent = text;
+  el.className = 'game-message ' + (type || '');
+}
+
+// ===== ОБЩЕЕ =====
 function shuffle(a) {
   const arr = [...a];
   for (let i = arr.length - 1; i > 0; i--) {
